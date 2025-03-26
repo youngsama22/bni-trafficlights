@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BNI Max 트래픽라이트</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+      text-align: center;
+    }
+    select {
+      font-size: 16px;
+      padding: 8px;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 90%;
+      max-width: 600px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .green { background-color: #c8f7c5; }
+    .yellow { background-color: #fff9c4; }
+    .red { background-color: #f8bbd0; }
+    .gray { background-color: #e0e0e0; }
+    .suggestion {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>BNI Max 챕터 - 트래픽라이트 점수</h1>
+  <label for="memberSelect">멤버 선택:</label>
+  <select id="memberSelect" onchange="displayScore()">
+    <option value="">-- 멤버 선택 --</option>
+  </select>
+  <div id="result"></div>
+  <div id="suggestion"></div>
+
+  <script>
+    const data = 
+const data = [
+  {
+    name: "Max - 이태희",
+    score: 62,
+    scores: {
+      "결석": 15,
+      "지각": 10,
+      "리퍼럴": 5,
+      "감사장": 10,
+      "비지터": 0,
+      "121": 10,
+      "교육": 12
+    }
+  },
+  {
+    name: "Max - 임진희",
+    score: 78,
+    scores: {
+      "결석": 15,
+      "지각": 10,
+      "리퍼럴": 15,
+      "감사장": 15,
+      "비지터": 5,
+      "121": 10,
+      "교육": 8
+    }
+  },
+  {
+    name: "Max - 김경희",
+    score: 87,
+    scores: {
+      "결석": 15,
+      "지각": 10,
+      "리퍼럴": 20,
+      "감사장": 15,
+      "비지터": 7,
+      "121": 10,
+      "교육": 10
+    }
+  },
+  {
+    name: "Max - 이호영",
+    score: 50,
+    scores: {
+      "결석": 10,
+      "지각": 5,
+      "리퍼럴": 5,
+      "감사장": 10,
+      "비지터": 5,
+      "121": 10,
+      "교육": 5
+    }
+  },
+  {
+    name: "Max - 곽여진",
+    score: 71,
+    scores: {
+      "결석": 15,
+      "지각": 10,
+      "리퍼럴": 15,
+      "감사장": 10,
+      "비지터": 1,
+      "121": 10,
+      "교육": 10
+    }
+  },
+  {
+    name: "Max - 송준호",
+    score: 68,
+    scores: {
+      "결석": 10,
+      "지각": 5,
+      "리퍼럴": 15,
+      "감사장": 15,
+      "비지터": 3,
+      "121": 10,
+      "교육": 10
+    }
+  }
+];
+;
+
+    const select = document.getElementById("memberSelect");
+    data.forEach(member => {
+      const option = document.createElement("option");
+      option.value = member.name;
+      option.textContent = member.name;
+      select.appendChild(option);
+    });
+
+    function getColor(score) {
+      if (score >= 70) return 'green';
+      if (score >= 50) return 'yellow';
+      if (score >= 30) return 'red';
+      return 'gray';
+    }
+
+    function getNextThreshold(score) {
+      if (score < 30) return 30;
+      if (score < 50) return 50;
+      if (score < 70) return 70;
+      return null;
+    }
+
+    function displayScore() {
+      const name = select.value;
+      const member = data.find(m => m.name === name);
+      if (!member) return;
+
+      const colorClass = getColor(member.score);
+      let html = `<table class="${colorClass}"><tr><th>항목</th><th>점수</th></tr>`;
+      for (let key in member.scores) {
+        html += `<tr><td>${key}</td><td>${member.scores[key]}</td></tr>`;
+      }
+      html += `<tr><th>총점</th><th>${member.score}</th></tr></table>`;
+      document.getElementById("result").innerHTML = html;
+
+      const next = getNextThreshold(member.score);
+      if (!next) {
+        document.getElementById("suggestion").innerHTML = `<div class="suggestion">🌟 이미 최고 점수입니다! 유지하세요!</div>`;
+        return;
+      }
+      const diff = next - member.score;
+      let suggestion = `<div class="suggestion">🟡 현재 점수는 ${member.score}점 (${colorClass})<br>
+        ${next}점으로 가려면 <strong>+${diff}점</strong>이 필요합니다.<br><br>
+        📌 어디서 점수를 올릴 수 있을까요?<ul>`;
+
+      for (let key in member.scores) {
+        let current = member.scores[key];
+        let max = 0;
+        if (key === "결석") max = 15;
+        else if (key === "지각") max = 10;
+        else if (key === "리퍼럴") max = 20;
+        else if (key === "감사장") max = 15;
+        else if (key === "비지터") max = 20;
+        else if (key === "121") max = 10;
+        else if (key === "교육") max = 10;
+        const gain = max - current;
+        if (gain > 0) {
+          suggestion += `<li>${key}: +${gain}점 가능 (현재 ${current}점 → 최대 ${max}점)</li>`;
+        }
+      }
+      suggestion += `</ul></div>`;
+      document.getElementById("suggestion").innerHTML = suggestion;
+    }
+  </script>
+</body>
+</html>
