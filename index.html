@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BNI 트래픽라이트</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 30px;
+      text-align: center;
+    }
+    select, table {
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+    }
+    .green { background-color: #c8f7c5; }
+    .yellow { background-color: #fff9c4; }
+    .red { background-color: #f8bbd0; }
+    .gray { background-color: #e0e0e0; }
+  </style>
+</head>
+<body>
+  <h1>BNI 트래픽라이트 점수 보기</h1>
+  <label for="memberSelect">멤버 선택:</label>
+  <select id="memberSelect" onchange="displayScore()">
+    <option value="">-- 멤버 선택 --</option>
+  </select>
+
+  <div id="result"></div>
+
+  <script>
+    const data = [
+      { name: "임승하 Lim Seung-ha", score: 70, scores: {"결석":10, "지각":10, "리퍼럴":15, "감사장":15, "비지터":0, "121":10, "교육":10} },
+      { name: "김경희 Kim Kyung-Hee", score: 70, scores: {"결석":15, "지각":10, "리퍼럴":20, "감사장":15, "비지터":0, "121":10, "교육":0} },
+      { name: "박대룡 Park,Daen-Ryong", score: 85, scores: {"결석":15, "지각":10, "리퍼럴":20, "감사장":15, "비지터":10, "121":10, "교육":5} },
+      { name: "송승훈 Song, Seung-Hun", score: 85, scores: {"결석":15, "지각":10, "리퍼럴":20, "감사장":15, "비지터":5, "121":10, "교육":10} },
+      { name: "조현우 Jo Hyun Woo", score: 75, scores: {"결석":10, "지각":0, "리퍼럴":20, "감사장":15, "비지터":10, "121":10, "교육":10} },
+    ];
+
+    const select = document.getElementById("memberSelect");
+    data.forEach(member => {
+      const option = document.createElement("option");
+      option.value = member.name;
+      option.textContent = member.name;
+      select.appendChild(option);
+    });
+
+    function getColorClass(score) {
+      if (score >= 70) return 'green';
+      if (score >= 50) return 'yellow';
+      if (score >= 30) return 'red';
+      return 'gray';
+    }
+
+    function displayScore() {
+      const selected = select.value;
+      const member = data.find(m => m.name === selected);
+      const resultDiv = document.getElementById("result");
+
+      if (!member) {
+        resultDiv.innerHTML = "";
+        return;
+      }
+
+      const colorClass = getColorClass(member.score);
+      let table = `<table class="${colorClass}">
+        <tr><th>항목</th><th>점수</th></tr>`;
+
+      for (let [key, val] of Object.entries(member.scores)) {
+        table += `<tr><td>${key}</td><td>${val}</td></tr>`;
+      }
+
+      table += `<tr><th>총점</th><th>${member.score}</th></tr></table>`;
+
+      resultDiv.innerHTML = table;
+    }
+  </script>
+</body>
+</html>
